@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>On Input (3.2.2) Failure Demo</title><style>body{font:1rem/1.5 system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem;color:#172334}fieldset,.card{border:1px solid #9aa9bc;border-radius:10px;padding:1rem;margin:1.25rem 0}legend{font-weight:700}label{display:block;margin:.6rem 0}select{font:inherit;padding:.45rem;min-width:220px}button{font:inherit;padding:.6rem 1rem} .note{background:#fff4d6;padding:1rem;border-left:4px solid #a05b00} :focus-visible{outline:3px solid #0069c2;outline-offset:3px}</style></head><body>
+<h1>Preference Center</h1><p>Choose how you would like to receive updates and which region you want to browse.</p>
+<div class="note"><strong>Intentional accessibility failures:</strong> Changing a radio button unexpectedly moves keyboard focus to the bottom of the page. Changing the select unexpectedly navigates to another page. Neither change is announced in advance. This is a test fixture, not a model implementation.</div>
+<main><fieldset><legend>Preferred update format</legend><p>Choose one option:</p><label><input type="radio" name="format" value="email"> Email digest</label><label><input type="radio" name="format" value="text"> Text message</label><label><input type="radio" name="format" value="post"> Printed newsletter</label></fieldset>
+<div class="card"><label for="region"><strong>Browse by region</strong></label><select id="region"><option value="">Choose a region</option><option value="north">North</option><option value="south">South</option><option value="west">West</option></select></div>
+<p><button type="button" onclick="document.getElementById('status').textContent='Preferences saved.'">Save preferences</button></p><p id="status" role="status"></p></main>
+<footer id="footer" tabindex="-1"><h2>Site information</h2><p>This footer is the unexpected focus destination for the radio buttons.</p><a href="#top" onclick="window.scrollTo(0,0)">Back to top</a></footer>
+<script>
+// Deliberate 3.2.2 failure: selecting a radio changes focus unexpectedly.
+document.querySelectorAll('input[name="format"]').forEach(radio=>radio.addEventListener('change',()=>{document.getElementById('footer').focus();}));
+// Deliberate 3.2.2 failure: changing a select navigates without advance warning.
+document.getElementById('region').addEventListener('change',event=>{if(event.target.value){const url=new URL(window.location.href);url.searchParams.set('region',event.target.value);window.location.assign(url.toString());}});
+</script></body></html>
