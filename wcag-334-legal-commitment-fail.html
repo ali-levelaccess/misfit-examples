@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WCAG 3.3.4 Failure: Legal Commitment</title><style>
+body{font:16px/1.55 system-ui,Arial,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;color:#20242a;background:#f7f9fc}h1,h2{line-height:1.25}section{background:white;border:1px solid #ccd3dc;border-radius:10px;padding:1.4rem;margin:1.5rem 0}label{display:block;margin:.75rem 0 .25rem}input,select{font:inherit;padding:.4rem;max-width:100%;box-sizing:border-box}button{font:inherit;padding:.55rem .9rem;margin-top:1rem;cursor:pointer;background:#164a82;color:white;border:0;border-radius:5px}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #e38c13;outline-offset:3px}.note{background:#fff5d9;padding:.8rem;border-left:4px solid #b86c00}.status{padding:.65rem;margin-top:1rem;background:#e9f3ed;border-radius:4px}.record{padding:.7rem;background:#edf2f8;margin-top:.7rem}.small{font-size:.9rem;color:#414b56}
+</style></head><body>
+<h1>WCAG 3.3.4 Failure: Legal Commitment</h1>
+<p class="note"><strong>Intentional accessibility failure for Incline validation.</strong> This action is simulated locally and provides no review, confirmation, correction, or undo mechanism. No real-world transaction or submission occurs.</p>
+<section aria-labelledby="legal-title">
+<h2 id="legal-title">2. Immediate legal commitment</h2>
+<p>Signing immediately finalizes a simulated binding agreement without a review step or opportunity to reverse the commitment.</p>
+<form id="legal-form">
+<label for="legal-name">Full legal name</label><input id="legal-name" type="text" value="Alex Example" required>
+<label for="agreement">Agreement</label><select id="agreement"><option value="12-month service contract">12-month service contract</option><option value="24-month service contract">24-month service contract</option></select>
+<button type="submit">Sign agreement now</button>
+</form><div id="legal-result" role="status" aria-live="polite"></div>
+</section>
+<p class="small">Refresh to reset the simulated example. Browser refresh is not an in-interface undo mechanism.</p>
+<script>(function(){'use strict';function finish(formId,resultId,message){
+ const form=document.getElementById(formId);
+ form.addEventListener('submit',function(event){
+  event.preventDefault();
+  if(!form.reportValidity())return;
+  document.getElementById(resultId).className='status';
+  document.getElementById(resultId).textContent=message();
+  form.querySelectorAll('input,select,button').forEach(function(control){control.disabled=true;});
+ });
+}
+finish('legal-form','legal-result',function(){return 'Agreement signed by '+document.getElementById('legal-name').value+': '+document.getElementById('agreement').value+'. Commitment finalized.';});})();</script></body></html>

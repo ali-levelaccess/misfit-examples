@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WCAG 3.3.4 Failure: Financial Transaction</title><style>
+body{font:16px/1.55 system-ui,Arial,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;color:#20242a;background:#f7f9fc}h1,h2{line-height:1.25}section{background:white;border:1px solid #ccd3dc;border-radius:10px;padding:1.4rem;margin:1.5rem 0}label{display:block;margin:.75rem 0 .25rem}input,select{font:inherit;padding:.4rem;max-width:100%;box-sizing:border-box}button{font:inherit;padding:.55rem .9rem;margin-top:1rem;cursor:pointer;background:#164a82;color:white;border:0;border-radius:5px}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #e38c13;outline-offset:3px}.note{background:#fff5d9;padding:.8rem;border-left:4px solid #b86c00}.status{padding:.65rem;margin-top:1rem;background:#e9f3ed;border-radius:4px}.record{padding:.7rem;background:#edf2f8;margin-top:.7rem}.small{font-size:.9rem;color:#414b56}
+</style></head><body>
+<h1>WCAG 3.3.4 Failure: Financial Transaction</h1>
+<p class="note"><strong>Intentional accessibility failure for Incline validation.</strong> This action is simulated locally and provides no review, confirmation, correction, or undo mechanism. No real-world transaction or submission occurs.</p>
+<section aria-labelledby="payment-title">
+<h2 id="payment-title">1. Immediate financial transaction</h2>
+<p>Transfer money to a saved recipient. Activating the button immediately completes the simulated transfer, without a review or correction step.</p>
+<form id="payment-form">
+<label for="recipient">Recipient</label><select id="recipient"><option value="Jordan Lee">Jordan Lee</option><option value="Morgan Chen">Morgan Chen</option></select>
+<label for="amount">Amount in dollars</label><input id="amount" type="number" min="0.01" step="0.01" value="250.00" required>
+<button type="submit">Transfer funds now</button>
+</form><div id="payment-result" role="status" aria-live="polite"></div>
+</section>
+<p class="small">Refresh to reset the simulated example. Browser refresh is not an in-interface undo mechanism.</p>
+<script>(function(){'use strict';function finish(formId,resultId,message){
+ const form=document.getElementById(formId);
+ form.addEventListener('submit',function(event){
+  event.preventDefault();
+  if(!form.reportValidity())return;
+  document.getElementById(resultId).className='status';
+  document.getElementById(resultId).textContent=message();
+  form.querySelectorAll('input,select,button').forEach(function(control){control.disabled=true;});
+ });
+}
+finish('payment-form','payment-result',function(){return 'Transfer completed: $'+Number(document.getElementById('amount').value).toFixed(2)+' sent to '+document.getElementById('recipient').value+'. Transaction finalized.';});})();</script></body></html>
