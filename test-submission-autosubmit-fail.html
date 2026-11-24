@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Driver Knowledge Exam - Demo (SC 3.3.4 failure)</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; color: #1a1a1a; background: #fff; }
+  fieldset { margin: 1.5rem 0; border: 2px solid #555; padding: 1rem; }
+  legend { font-weight: bold; padding: 0 0.5rem; }
+  label { display: block; margin: 0.5rem 0; padding: 0.25rem; }
+  input:focus { outline: 3px solid #ffbf00; outline-offset: 2px; }
+  .notice { background: #f0f0f0; border: 1px solid #767676; padding: 0.75rem 1rem; }
+  #progress { font-weight: bold; }
+  #result { margin-top: 1.5rem; padding: 1rem; border: 2px solid #1b6e2d; }
+</style>
+</head>
+<body>
+<!--
+  INTENTIONAL FAILURE: WCAG 2.x SC 3.3.4 Error Prevention (Legal, Financial, Data), Level AA
+  Situation C: page includes a testing application that submits user test responses.
+  Different mechanism from the single "Submit" button demo: here each answer is submitted
+  the instant a radio button receives selection (on change), one question per screen, with
+  no Back, no Next/Submit button, no review, and no way to change an answer.
+    - Not reversible: a selected answer is recorded immediately and the question is replaced
+    - Not checked: no opportunity to correct a mis-selected answer (arrow keys on a radio group
+      change selection and therefore submit the answer for keyboard users)
+    - Not confirmed: no confirmation or review step at any point
+  Everything else (fieldset/legend, labels, contrast, focus styles, lang, live status) is
+  intentionally accessible so 3.3.4 is the only expected failure.
+  Fictional exam. No data is sent anywhere.
+-->
+<main>
+  <h1>Driver Knowledge Exam</h1>
+  <p class="notice">Demo page with a fictional exam. Nothing is stored or transmitted. Each answer is recorded as soon as you choose it.</p>
+
+  <p id="progress" aria-live="polite"></p>
+
+  <form id="exam" onsubmit="return false;">
+    <fieldset id="question-box">
+      <legend id="question-text"></legend>
+      <div id="options"></div>
+    </fieldset>
+  </form>
+
+  <div id="result" role="status" hidden></div>
+</main>
+
+<script>
+  var questions = [
+    { text: 'Question 1 of 3: What does a red octagonal sign mean?',
+      options: ['Stop', 'Yield', 'Merge'], correct: 0 },
+    { text: 'Question 2 of 3: What should you do at a flashing yellow light?',
+      options: ['Stop completely', 'Proceed with caution', 'Speed up'], correct: 1 },
+    { text: 'Question 3 of 3: When must headlights be turned on?',
+      options: ['Only at midnight', 'When visibility is low', 'Never in rain'], correct: 1 }
+  ];
+  var current = 0, score = 0;
+
+  function render() {
+    var q = questions[current];
+    document.getElementById('question-text').textContent = q.text;
+    document.getElementById('progress').textContent = 'Question ' + (current + 1) + ' of ' + questions.length;
+    var html = '';
+    q.options.forEach(function (opt, i) {
+      html += '<label><input type="radio" name="answer" value="' + i + '"> ' + opt + '</label>';
+    });
+    document.getElementById('options').innerHTML = html;
+    var radios = document.querySelectorAll('input[name="answer"]');
+    for (var i = 0; i < radios.length; i++) {
+      // FAILURE: answer is submitted and locked the moment selection changes.
+      radios[i].addEventListener('change', onAnswer);
+    }
+    radios[0].focus();
+  }
+
+  function onAnswer(e) {
+    if (Number(e.target.value) === questions[current].correct) { score++; }
+    current++;
+    if (current < questions.length) {
+      render();
+    } else {
+      // FAILURE: exam is final; no review, confirmation, correction, or retake offered.
+      document.getElementById('exam').hidden = true;
+      document.getElementById('progress').textContent = '';
+      var r = document.getElementById('result');
+      r.textContent = 'Exam complete. Your responses have been submitted and recorded. Score: ' + score + ' of ' + questions.length + '. Answers cannot be changed.';
+      r.hidden = false;
+    }
+  }
+
+  render();
+</script>
+</body>
+</html>
