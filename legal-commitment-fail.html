@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Equipment Lease Agreement - Demo (SC 3.3.4 failure)</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; color: #1a1a1a; background: #fff; }
+  label { display: block; margin-top: 1rem; font-weight: bold; }
+  input[type="text"], input[type="email"] { width: 100%; padding: 0.5rem; border: 2px solid #555; font-size: 1rem; box-sizing: border-box; }
+  button { margin-top: 1.5rem; padding: 0.75rem 1.5rem; font-size: 1rem; background: #0b3d91; color: #fff; border: 2px solid #0b3d91; cursor: pointer; }
+  button:focus, input:focus { outline: 3px solid #ffbf00; outline-offset: 2px; }
+  .notice { background: #f0f0f0; border: 1px solid #767676; padding: 0.75rem 1rem; margin-bottom: 1.5rem; }
+  #result { margin-top: 1.5rem; padding: 1rem; border: 2px solid #1b6e2d; }
+</style>
+</head>
+<body>
+<!--
+  INTENTIONAL FAILURE: WCAG 2.x SC 3.3.4 Error Prevention (Legal, Financial, Data), Level AA
+  Situation A: page causes a legal commitment.
+  This page deliberately provides NONE of the three required safeguards:
+    - Not reversible: no cancel / undo / amendment window after signing
+    - Not checked: no validation of input before commitment beyond the browser "required" attribute
+    - Not confirmed: no review step, no confirmation page, no confirm checkbox
+  Everything else (labels, contrast, focus, language, headings, status message) is intentionally accessible
+  so that 3.3.4 is the only expected failure.
+  Fictional company. No data is sent anywhere.
+-->
+<main>
+  <h1>Equipment Lease Agreement</h1>
+
+  <p class="notice">
+    Demo page with a fictional company. Nothing is stored or transmitted.
+  </p>
+
+  <h2>Terms</h2>
+  <p>
+    By signing, <strong>Northwind Equipment Co.</strong> (the "Lessor") leases one industrial printer to you
+    for 36 months at $450 per month. Early termination incurs a fee equal to the remaining balance.
+    This is a legally binding contract.
+  </p>
+
+  <h2>Sign the agreement</h2>
+  <form id="lease-form">
+    <label for="fullname">Full legal name</label>
+    <input type="text" id="fullname" name="fullname" autocomplete="name" required>
+
+    <label for="email">Email address</label>
+    <input type="email" id="email" name="email" autocomplete="email" required>
+
+    <!-- FAILURE: single activation executes the legal commitment immediately. -->
+    <button type="submit">Sign and accept agreement</button>
+  </form>
+
+  <div id="result" role="status" hidden></div>
+</main>
+
+<script>
+  document.getElementById('lease-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('fullname').value;
+    var result = document.getElementById('result');
+    // FAILURE: commitment is final; no review, confirmation, cancellation, or amendment is offered.
+    result.textContent = 'Agreement signed. ' + name + ' is now bound to the 36-month lease. This cannot be changed.';
+    result.hidden = false;
+    document.getElementById('lease-form').querySelector('button').disabled = true;
+  });
+</script>
+</body>
+</html>

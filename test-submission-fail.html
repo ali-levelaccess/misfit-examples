@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Safety Certification Quiz - Demo (SC 3.3.4 failure)</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; color: #1a1a1a; background: #fff; }
+  fieldset { margin: 1.5rem 0; border: 2px solid #555; padding: 1rem; }
+  legend { font-weight: bold; padding: 0 0.5rem; }
+  label { display: block; margin: 0.5rem 0; }
+  button { margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 1rem; background: #0b3d91; color: #fff; border: 2px solid #0b3d91; cursor: pointer; }
+  button:focus, input:focus { outline: 3px solid #ffbf00; outline-offset: 2px; }
+  .notice { background: #f0f0f0; border: 1px solid #767676; padding: 0.75rem 1rem; }
+  #result { margin-top: 1.5rem; padding: 1rem; border: 2px solid #1b6e2d; }
+</style>
+</head>
+<body>
+<!--
+  INTENTIONAL FAILURE: WCAG 2.x SC 3.3.4 Error Prevention (Legal, Financial, Data), Level AA
+  Situation C: page includes a testing application that submits user test responses.
+  This page deliberately provides NONE of the required safeguards:
+    - Not reversible: answers cannot be changed after submission
+    - Not checked: unanswered questions are not detected or flagged before submission
+    - Not confirmed: no review-your-answers screen, no confirm step
+  Everything else (fieldset/legend grouping, labels, contrast, focus, language, status message) is
+  intentionally accessible so that 3.3.4 is the only expected failure.
+  Fictional quiz. No data is sent anywhere.
+-->
+<main>
+  <h1>Workplace Safety Certification Quiz</h1>
+
+  <p class="notice">
+    Demo page with a fictional quiz. Your score is recorded when you submit. Nothing is stored or transmitted.
+  </p>
+
+  <form id="quiz-form">
+    <fieldset>
+      <legend>Question 1: What color is a standard fire extinguisher?</legend>
+      <label><input type="radio" name="q1" value="red"> Red</label>
+      <label><input type="radio" name="q1" value="blue"> Blue</label>
+      <label><input type="radio" name="q1" value="green"> Green</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Question 2: How many exits should a workspace have at minimum?</legend>
+      <label><input type="radio" name="q2" value="1"> One</label>
+      <label><input type="radio" name="q2" value="2"> Two</label>
+      <label><input type="radio" name="q2" value="3"> Three</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Question 3: Who should you notify first after a workplace injury?</legend>
+      <label><input type="radio" name="q3" value="supervisor"> Your supervisor</label>
+      <label><input type="radio" name="q3" value="coworker"> A coworker</label>
+      <label><input type="radio" name="q3" value="nobody"> Nobody</label>
+    </fieldset>
+
+    <!-- FAILURE: submits and locks in answers immediately, even if questions were skipped. -->
+    <button type="submit">Submit final answers</button>
+  </form>
+
+  <div id="result" role="status" hidden></div>
+</main>
+
+<script>
+  document.getElementById('quiz-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var answers = { q1: 'red', q2: '2', q3: 'supervisor' };
+    var score = 0;
+    Object.keys(answers).forEach(function (q) {
+      var picked = document.querySelector('input[name="' + q + '"]:checked');
+      if (picked && picked.value === answers[q]) score++;
+    });
+    var result = document.getElementById('result');
+    // FAILURE: responses are final; no review, confirmation, correction, or retake is offered,
+    // and skipped questions are silently scored as wrong.
+    result.textContent = 'Your answers have been submitted and recorded. Score: ' + score + ' of 3. Answers cannot be changed.';
+    result.hidden = false;
+    var inputs = document.querySelectorAll('#quiz-form input, #quiz-form button');
+    for (var i = 0; i < inputs.length; i++) { inputs[i].disabled = true; }
+  });
+</script>
+</body>
+</html>
